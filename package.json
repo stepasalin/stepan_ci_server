@@ -6,6 +6,8 @@
   "scripts": {
     "start": "NODE_ENV=production node build/index.js",
     "dev": "NODE_ENV=development ts-node-dev src/index.ts",
+    "ololo": "NODE_ENV=development ts-node-dev src/ololo.ts",
+    "whatevs": "NODE_ENV=development ts-node-dev src/app.ts",
     "lint": "eslint --fix",
     "build": "rm -rf ./build && tsc"
   },

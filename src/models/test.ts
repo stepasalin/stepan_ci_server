@@ -26,4 +26,4 @@ const testSchema: Schema = new Schema(
     {timestamps: true},
 );
 
-export default model<Test>('Test', testSchema);
+export default model<ITest>('Test', testSchema);
