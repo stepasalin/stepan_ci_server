@@ -11,35 +11,10 @@ const getTests = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-// const updateTest = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const {
-//       params: {id},
-//       body,
-//     } = req;
-//     const updateTest: ITest | null = await Test.findByIdAndUpdate(
-//         {_id: id},
-//         body,
-//     );
-//     const allTodos: ITest[] = await Test.find();
-//     res.status(200).json({
-//       message: 'Todo updated',
-//       test: updateTest,
-//       tests: allTodos,
-//     });
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
 const addTest = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log(req);
-
     const body =
     req.body as Pick<ITest, 'name' | 'description' | 'status' | 'runCmd'>;
-
-    console.log(body);
 
     const test: ITest = new Test({
       name: body.name,

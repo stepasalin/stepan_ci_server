@@ -14,7 +14,7 @@ const testSchema: Schema = new Schema(
       },
 
       status: {
-        type: Boolean,
+        type: String,
         required: true,
       },
 
