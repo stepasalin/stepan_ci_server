@@ -1,4 +1,3 @@
-import {IRun} from './../types/run';
 import {model, Schema} from 'mongoose';
 
 const runSchema: Schema = new Schema(
