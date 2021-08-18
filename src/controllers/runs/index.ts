@@ -28,7 +28,7 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
 
     res
         .status(201)
-        .json({message: 'Run added', test: newRun, tests: allRuns});
+        .json({message: 'Run added', run: newRun, runs: allRuns});
   } catch (error) {
     throw error;
   }
