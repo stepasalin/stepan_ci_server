@@ -22,6 +22,11 @@ const testSchema: Schema = new Schema(
         type: String,
         required: true,
       },
+
+      runs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Run',
+      }],
     },
     {timestamps: true},
 );
