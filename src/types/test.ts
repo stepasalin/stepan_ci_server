@@ -6,5 +6,4 @@ export interface ITest extends Document {
   description: string
   status: string
   runCmd: string
-  runs: Types.Array<IRun>
 }

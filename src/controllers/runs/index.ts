@@ -1,6 +1,4 @@
 import {Response, Request} from 'express';
-import {ITest} from './../../types/test';
-import Test from '../../models/test';
 import Run from '../../models/run';
 import {IRun} from '../../types/run';
 
