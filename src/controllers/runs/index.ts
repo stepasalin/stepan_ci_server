@@ -1,5 +1,6 @@
 import {Response, Request} from 'express';
 import Run from '../../models/run';
+import Test from '../../models/test';
 import {IRun} from '../../types/run';
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
@@ -16,19 +17,28 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     const body =
     req.body as Pick<IRun, 'agent' | 'status' | 'runCmd' | 'test'>;
 
-    const run: IRun = new Run({
-      agent: body.agent,
-      status: body.status,
-      runCmd: body.runCmd,
-      test: body.test,
-    });
+    const test = await Test.findById(body.test);
 
-    const newRun: IRun = await run.save();
-    const allRuns: IRun[] = await Run.find();
+    if (test == null) {
+      res
+          .status(404)
+          .json({message: `Test with id ${body.test} not found`});
+    } else {
+      const run: IRun = new Run({
+        agent: body.agent,
+        status: body.status,
+        runCmd: body.runCmd,
+        test: body.test,
+      });
 
-    res
-        .status(201)
-        .json({message: 'Run added', run: newRun, runs: allRuns});
+      const newRun: IRun = await run.save();
+      const allRuns: IRun[] = await Run.find();
+
+      res
+          .status(201)
+          .json({message: 'Run added', run: newRun, runs: allRuns});
+    }
+    ;
   } catch (error) {
     throw error;
   }
