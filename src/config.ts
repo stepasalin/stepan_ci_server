@@ -1,6 +1,5 @@
 export const PORT: string | number = process.env.PORT || 4000;
-export const MONGODB_USER : string = process.env.MONGODB_USER || 'root';
-export const MONGODB_PASSWORD : string = process.env.
-    MONGODB_PASSWORD || 'password';
-export const MONGODB_HOST_AND_PORT : string = process.env.
-    MONGODB_HOST_AND_PORT || 'localhost:27017';
+
+export const MONGO_URI : string = process.env.NODE_ENV == 'production' ?
+    'mongodb://root:password@localhost:27017/prod_db?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false' :
+    'mongodb://root:password@localhost:27017/test_db?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false';
