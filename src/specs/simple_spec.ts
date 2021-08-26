@@ -28,14 +28,19 @@ describe('Blah blah', () => {
     return db.close();
   });
 
-  it('asdasd', async () =>{
+  it('cannot add Run to non-existent Test', async () =>{
     const response = await request(app)
         .post('/add-run')
         .send(
-            {agent: '2323', status: '3423', runCmd: 'ls -la', test: `${nonExistentId}`},
+            {agent: '2323', status: '3423',
+              runCmd: 'ls -la', test: `${nonExistentId}`},
         )
         .set('Content-Type', 'application/json');
-    expect(response.text).toEqual('hello');
+    const parsedResponse = JSON.parse(response.text);
+    // expect(response.text).toEqual('hello');
+    expect(parsedResponse.message)
+        .toEqual(`Test with id ${nonExistentId} not found`);
+    expect(response.status).toEqual(404);
   });
 });
 
