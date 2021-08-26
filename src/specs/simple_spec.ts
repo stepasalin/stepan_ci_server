@@ -4,7 +4,6 @@ import {ITest} from './../types/test';
 import Test from './../models/test';
 import {Schema} from 'mongoose';
 import Run from './../models/run';
-import {countBy} from 'lodash';
 const request = require('supertest');
 
 async function postToAddRun(runParams: object) {
