@@ -37,7 +37,6 @@ describe('API', () => {
         )
         .set('Content-Type', 'application/json');
     const parsedResponse = JSON.parse(response.text);
-    // expect(response.text).toEqual('hello');
     expect(parsedResponse.message)
         .toEqual(`Test with id ${nonExistentId} not found`);
     expect(response.status).toEqual(404);
