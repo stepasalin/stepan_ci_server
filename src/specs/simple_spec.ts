@@ -5,7 +5,7 @@ import Test from './../models/test';
 import {Schema} from 'mongoose';
 const request = require('supertest');
 
-describe('Blah blah', () => {
+describe('API', () => {
   let nonExistentId: Schema.Types.ObjectId;
 
   beforeAll( async () => {
