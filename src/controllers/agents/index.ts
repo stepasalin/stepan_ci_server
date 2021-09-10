@@ -16,9 +16,8 @@ const addAgent = async (req: Request, res: Response): Promise<void> => {
     const body =
     req.body as Pick<IAgent, 'name' | 'status'>;
 
-    const query = await Agent.find({name: body.name});
-    console.log(query.length);
-    if (query.length == 0) {
+    const query = await Agent.findOne({name: body.name});
+    if (query == null) {
       const agent: IAgent = new Agent({
         name: body.name,
         status: body.status,
