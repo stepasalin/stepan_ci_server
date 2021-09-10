@@ -22,6 +22,7 @@ const addAgent = async (req: Request, res: Response): Promise<void> => {
       const agent: IAgent = new Agent({
         name: body.name,
         status: body.status,
+        lastActiveAt: Date.now(),
       });
 
       const newAgent: IAgent = await agent.save();

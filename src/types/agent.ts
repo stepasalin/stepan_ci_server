@@ -8,4 +8,5 @@ export enum agentStatus {
 export interface IAgent extends Document {
   name: string
   status: agentStatus
+  lastActiveAt: Date
 }

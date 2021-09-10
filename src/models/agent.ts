@@ -14,6 +14,11 @@ const agentSchema: Schema = new Schema(
         default: agentStatus.free, required: true,
       },
 
+      lastActiveAt: {
+        type: Date,
+        required: false,
+      },
+
     },
     {timestamps: true},
 );
