@@ -1,16 +1,16 @@
-import {app} from '../app';
+import { app } from '../app';
 import db from '../database/connection';
-import {ITest} from './../types/test';
+import { ITest } from './../types/test';
 import Test from './../models/test';
-import {Schema} from 'mongoose';
+import { Schema } from 'mongoose';
 import Run from './../models/run';
-const request = require('supertest');
+import request from 'supertest';
 
-async function postToAddRun(runParams: object) {
+async function postToAddRun(runParams: Record<string, unknown>) {
   const response = await request(app)
-      .post('/add-run')
-      .send(runParams)
-      .set('Content-Type', 'application/json');
+    .post('/add-run')
+    .send(runParams)
+    .set('Content-Type', 'application/json');
   return response;
 }
 
@@ -18,7 +18,7 @@ describe('API', () => {
   let nonExistentId: Schema.Types.ObjectId;
   let someTest: ITest;
 
-  beforeAll( async () => {
+  beforeAll(async () => {
     db.on('open', async () => {
       console.log('Database starts successfully');
     });
@@ -30,7 +30,7 @@ describe('API', () => {
     };
     const deletedTest: ITest = new Test({
       ...sharedTestParams,
-      ...{name: 'This test will be deleted after I fetch id'},
+      ...{ name: 'This test will be deleted after I fetch id' },
     });
     await deletedTest.save();
     nonExistentId = deletedTest.id;
@@ -38,27 +38,29 @@ describe('API', () => {
 
     someTest = new Test({
       ...sharedTestParams,
-      ...{name: 'This test will be used to append runs to it'},
+      ...{ name: 'This test will be used to append runs to it' },
     });
     await someTest.save();
   });
 
-
-  afterAll( async () => {
+  afterAll(async () => {
     await db.dropDatabase();
     return db.close();
   });
 
-  it('cannot add Run to non-existent Test', async () =>{
-    const runParams = {agent: '2323', status: '3423',
-      runCmd: 'ls -la', test: `${nonExistentId}`};
+  it('cannot add Run to non-existent Test', async () => {
+    const runParams = {
+      agent: '2323',
+      status: '3423',
+      runCmd: 'ls -la',
+      test: `${nonExistentId}`,
+    };
     const response = await postToAddRun(runParams);
-    expect(JSON.parse(response.text).message)
-        .toEqual(`Test with id ${nonExistentId} not found`);
+    expect(JSON.parse(response.text).message).toEqual(
+      `Test with id ${nonExistentId} not found`
+    );
     expect(response.status).toEqual(404);
     const count = await Run.countDocuments();
     expect(count).toEqual(0);
   });
 });
-
-

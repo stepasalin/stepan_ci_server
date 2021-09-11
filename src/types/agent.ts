@@ -1,12 +1,12 @@
-import {Document} from 'mongoose';
+import { Document } from 'mongoose';
 
-export enum agentStatus {
-    free = 'free',
-    busy = 'busy'
+export enum AgentStatus {
+  free = 'free',
+  busy = 'busy',
 }
 
 export interface IAgent extends Document {
-  name: string
-  status: agentStatus
-  lastActiveAt: Date
+  name: string;
+  status: AgentStatus;
+  lastActiveAt: Date;
 }

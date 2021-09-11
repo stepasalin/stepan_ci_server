@@ -1,12 +1,12 @@
-import {Response, Request} from 'express';
+import { Response, Request } from 'express';
 import Run from '../../models/run';
 import Test from '../../models/test';
-import {IRun} from '../../types/run';
+import { IRun } from '../../types/run';
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
   try {
     const runs: IRun[] = await Run.find();
-    res.status(200).json({runs});
+    res.status(200).json({ runs });
   } catch (error) {
     throw error;
   }
@@ -14,15 +14,12 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
 
 const addRun = async (req: Request, res: Response): Promise<void> => {
   try {
-    const body =
-    req.body as Pick<IRun, 'agent' | 'status' | 'runCmd' | 'test'>;
+    const body = req.body as Pick<IRun, 'agent' | 'status' | 'runCmd' | 'test'>;
 
     const test = await Test.findById(body.test);
 
     if (test == null) {
-      res
-          .status(404)
-          .json({message: `Test with id ${body.test} not found`});
+      res.status(404).json({ message: `Test with id ${body.test} not found` });
     } else {
       const run: IRun = new Run({
         agent: body.agent,
@@ -35,12 +32,11 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
       const allRuns: IRun[] = await Run.find();
 
       res
-          .status(201)
-          .json({message: 'Run added', run: newRun, runs: allRuns});
+        .status(201)
+        .json({ message: 'Run added', run: newRun, runs: allRuns });
     }
-    ;
   } catch (error) {
     throw error;
   }
 };
-export {getRuns, addRun};
+export { getRuns, addRun };

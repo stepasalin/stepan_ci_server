@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import {MONGO_URI}
-  from '../config';
+import { MONGO_URI } from '../config';
 
 const options = {
   useCreateIndex: true,
@@ -11,10 +10,7 @@ const options = {
 
 (async () => {
   try {
-    await mongoose.connect(
-        MONGO_URI,
-        options,
-    );
+    await mongoose.connect(MONGO_URI, options);
   } catch (error) {
     console.log('Database connection error: ', error);
   }
