@@ -1,6 +1,6 @@
 import { Response, Request } from 'express';
 import Run from '../../models/run';
-import Test from '../../models/test';
+import AutoTest from '../../models/auto_test';
 import { IRun } from '../../types/run';
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
@@ -16,10 +16,10 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
   try {
     const body = req.body as Pick<IRun, 'agent' | 'executionStatus' | 'availability' | 'test'>;
 
-    const test = await Test.findById(body.test);
+    const test = await AutoTest.findById(body.test);
 
     if (test == null) {
-      res.status(404).json({ message: `Test with id ${body.test} not found` });
+      res.status(404).json({ message: `AutoTest with id ${body.test} not found` });
     } else {
       const run: IRun = new Run({
         test: body.test,

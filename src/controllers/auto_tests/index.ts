@@ -1,10 +1,10 @@
 import { Response, Request } from 'express';
-import { ITest } from './../../types/test';
-import Test from '../../models/test';
+import { IAutoTest } from '../../types/auto_test';
+import AutoTest from '../../models/auto_test';
 
 const getTests = async (req: Request, res: Response): Promise<void> => {
   try {
-    const tests: ITest[] = await Test.find();
+    const tests: IAutoTest[] = await AutoTest.find();
     res.status(200).json({ tests });
   } catch (error) {
     throw error;
@@ -14,23 +14,23 @@ const getTests = async (req: Request, res: Response): Promise<void> => {
 const addTest = async (req: Request, res: Response): Promise<void> => {
   try {
     const body = req.body as Pick<
-      ITest,
+      IAutoTest,
       'name' | 'description' | 'status' | 'runCmd'
     >;
 
-    const test: ITest = new Test({
+    const autoTest: IAutoTest = new AutoTest({
       name: body.name,
       description: body.description,
       status: body.status,
       runCmd: body.runCmd,
     });
 
-    const newTest: ITest = await test.save();
-    const allTests: ITest[] = await Test.find();
+    const newTest: IAutoTest = await autoTest.save();
+    const allTests: IAutoTest[] = await AutoTest.find();
 
     res
       .status(201)
-      .json({ message: 'Test added', test: newTest, tests: allTests });
+      .json({ message: 'Auto Test added', auto_test: newTest, auto_tests: allTests });
   } catch (error) {
     throw error;
   }

@@ -1,7 +1,7 @@
-import { ITest } from './../types/test';
+import { IAutoTest } from '../types/auto_test';
 import { model, Schema } from 'mongoose';
 
-const testSchema: Schema = new Schema(
+const autoTestSchema: Schema = new Schema(
   {
     name: {
       type: String,
@@ -26,4 +26,4 @@ const testSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export default model<ITest>('Test', testSchema);
+export default model<IAutoTest>('AutoTest', autoTestSchema);
