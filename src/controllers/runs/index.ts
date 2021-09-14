@@ -23,8 +23,6 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     } else {
       const run: IRun = new Run({
         agent: body.agent,
-        // executionStatus: body.executionStatus,
-        // availability: body.availability,
         test: body.test,
       });
 
