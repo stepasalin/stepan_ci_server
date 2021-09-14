@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface ITest extends Document {
+export interface IAutoTest extends Document {
   name: string;
   description: string;
   status: string;

@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { ITest } from './test';
+import { IAutoTest } from './auto_test';
 
 export enum RunExecutionStatus {
   pending = 'pending',
@@ -17,5 +17,5 @@ export interface IRun extends Document {
   agent: string;
   executionStatus: RunExecutionStatus;
   availability: RunAvailability;
-  test: ITest;
+  test: IAutoTest;
 }

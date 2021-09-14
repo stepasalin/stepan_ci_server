@@ -1,7 +1,7 @@
 import { app } from '../app';
 import db from '../database/connection';
-import { ITest } from './../types/test';
-import Test from './../models/test';
+import { IAutoTest } from '../types/auto_test';
+import Test from '../models/auto_test';
 import { Schema } from 'mongoose';
 import Run from './../models/run';
 import request from 'supertest';
@@ -16,7 +16,7 @@ async function postToAddRun(runParams: Record<string, unknown>) {
 
 describe('API', () => {
   let nonExistentId: Schema.Types.ObjectId;
-  let someTest: ITest;
+  let someTest: IAutoTest;
 
   beforeAll(async () => {
     db.on('open', async () => {
@@ -28,7 +28,7 @@ describe('API', () => {
       status: 'who cares',
       runCmd: 'ls -la',
     };
-    const deletedTest: ITest = new Test({
+    const deletedTest: IAutoTest = new Test({
       ...sharedTestParams,
       ...{ name: 'This test will be deleted after I fetch id' },
     });
@@ -54,7 +54,7 @@ describe('API', () => {
     };
     const response = await postToAddRun(runParams);
     expect(JSON.parse(response.text).message).toEqual(
-      `Test with id ${nonExistentId} not found`
+      `AutoTest with id ${nonExistentId} not found`
     );
     expect(response.status).toEqual(404);
     const count = await Run.countDocuments();
