@@ -50,9 +50,6 @@ describe('API', () => {
 
   it('cannot add Run to non-existent Test', async () => {
     const runParams = {
-      agent: '2323',
-      status: '3423',
-      runCmd: 'ls -la',
       test: `${nonExistentId}`,
     };
     const response = await postToAddRun(runParams);
