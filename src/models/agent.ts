@@ -1,4 +1,4 @@
-import { agentStatus, IAgent } from './../types/agent';
+import { AgentStatus, IAgent } from './../types/agent';
 import { model, Schema } from 'mongoose';
 
 const agentSchema: Schema = new Schema(
@@ -10,8 +10,8 @@ const agentSchema: Schema = new Schema(
 
     status: {
       type: String,
-      enum: Object.values(agentStatus),
-      default: agentStatus.free,
+      enum: Object.values(AgentStatus),
+      default: AgentStatus.free,
       required: true,
     },
 
