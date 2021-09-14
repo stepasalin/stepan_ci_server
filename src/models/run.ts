@@ -1,11 +1,12 @@
-import { IRun, RunExecutionStatus } from './../types/run';
+import { IRun, RunExecutionStatus, RunAvailability } from './../types/run';
 import { model, Schema } from 'mongoose';
 
 const runSchema: Schema = new Schema(
   {
     agent: {
-      type: String,
-      required: true,
+      type: Schema.Types.ObjectId,
+      required: false,
+      ref: 'Agent'
     },
 
     executionStatus: {
@@ -17,6 +18,8 @@ const runSchema: Schema = new Schema(
 
     availability: {
       type: String,
+      enum: Object.values(RunAvailability),
+      default: RunAvailability.available,
       required: false,
     },
 

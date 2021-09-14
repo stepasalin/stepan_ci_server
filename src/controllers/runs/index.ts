@@ -14,7 +14,7 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
 
 const addRun = async (req: Request, res: Response): Promise<void> => {
   try {
-    const body = req.body as Pick<IRun, 'agent' | 'status' | 'runCmd' | 'test'>;
+    const body = req.body as Pick<IRun, 'agent' | 'executionStatus' | 'availability' | 'test'>;
 
     const test = await Test.findById(body.test);
 
@@ -23,8 +23,8 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     } else {
       const run: IRun = new Run({
         agent: body.agent,
-        status: body.status,
-        runCmd: body.runCmd,
+        // executionStatus: body.executionStatus,
+        // availability: body.availability,
         test: body.test,
       });
 
