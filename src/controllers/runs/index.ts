@@ -22,7 +22,6 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ message: `Test with id ${body.test} not found` });
     } else {
       const run: IRun = new Run({
-        agent: body.agent,
         test: body.test,
       });
 
