@@ -1,7 +1,9 @@
 import { Response, Request } from 'express';
 import Run from '../../models/run';
 import AutoTest from '../../models/auto_test';
-import { IRun } from '../../types/run';
+import { IRun, RunAvailability } from '../../types/run';
+import Agent from '../../models/agent'
+import { performViaAgent } from '../../controllers/agents/index'
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -11,6 +13,33 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
+
+const assignToAgent = async(req: Request, res: Response): Promise<void> => {
+  const agentId = req.body.agentId;
+  const runId = req.body.runId;
+
+  const agent = await Agent.findById(agentId);
+  if (agent == null) {
+    res.status(404).json({ message: `Agent with id ${agentId} not found` });
+    return;
+  }
+
+  const run =  await Run.findById(runId);
+  if (run == null) {
+    res.status(404).json({ message: `Run with id ${runId} not found` });
+    return;
+  }
+
+  await performViaAgent(
+  agent,
+  async () => {
+    run.availability = RunAvailability.taken;
+    run.agent = agentId;
+    await run.save();
+  }
+  );
+  res.status(200).json({ message: 'OK' });
+}
 
 const addRun = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -36,4 +65,4 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getRuns, addRun };
+export { getRuns, addRun, assignToAgent };

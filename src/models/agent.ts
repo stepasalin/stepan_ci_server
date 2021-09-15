@@ -1,7 +1,8 @@
 import { AgentStatus, IAgent } from './../types/agent';
 import { model, Schema } from 'mongoose';
 
-const agentSchema: Schema = new Schema(
+
+export const Agent =  model<IAgent>('Agent', new Schema(
   {
     name: {
       type: String,
@@ -21,6 +22,6 @@ const agentSchema: Schema = new Schema(
     },
   },
   { timestamps: true }
-);
+));
 
-export default model<IAgent>('Agent', agentSchema);
+
