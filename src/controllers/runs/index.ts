@@ -2,7 +2,7 @@ import { Response, Request } from 'express';
 import Run from '../../models/run';
 import AutoTest from '../../models/auto_test';
 import { IRun, RunAvailability } from '../../types/run';
-import Agent from '../../models/agent'
+import { Agent } from '../../models/agent'
 import { performViaAgent } from '../../controllers/agents/index'
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
