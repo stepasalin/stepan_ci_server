@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getTests, addTest } from '../controllers/auto_tests';
-import { getRuns, addRun, assignToAgent } from '../controllers/runs';
+import { getRuns, addRun, findForAgent } from '../controllers/runs';
 import { getAgents, addAgent } from '../controllers/agents';
 import bodyParser from 'body-parser';
 
@@ -15,6 +15,7 @@ router.get('/all-runs', getRuns);
 router.post('/add-run', jsonParser, addRun);
 router.get('/all-agents', jsonParser, getAgents);
 router.post('/add-agent', jsonParser, addAgent);
-router.post('/assign', jsonParser, assignToAgent);
+// router.post('/assign', jsonParser, assignToAgent);
+router.post('/get-run', jsonParser, findForAgent)
 
 export default router;

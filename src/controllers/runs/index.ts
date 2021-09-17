@@ -2,8 +2,10 @@ import { Response, Request } from 'express';
 import Run from '../../models/run';
 import AutoTest from '../../models/auto_test';
 import { IRun, RunAvailability } from '../../types/run';
+import { IAgent } from '../../types/agent';
 import { Agent } from '../../models/agent'
 import { performViaAgent } from '../../controllers/agents/index'
+import { FilterQuery, Schema } from 'mongoose';
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -13,6 +15,35 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
+
+const assignAgent = async(run: IRun, agent: IAgent): Promise<void> => {
+  await performViaAgent(
+    agent,
+    async () => {
+      run.availability = RunAvailability.taken;
+      run.agent = agent.id;
+      await run.save();
+    }
+  )
+};
+
+const findForAgent = async(req: Request, res: Response): Promise<void> => {
+  const agentId = req.body.agentId;
+  const agent = await Agent.findById(agentId);
+  if (agent == null) {
+    res.status(404).json({ message: `Agent with id ${req.body.agentId} not found` });
+    return;
+  }
+
+  const run = await Run.findOne({availability: 'available', executionStatus: 'pending'}  as FilterQuery<Schema>)
+  if (run == null) {
+    res.status(200).json({});
+    return;
+  }
+
+  assignAgent(run, agent);
+  res.status(200).json({runId: run.id});
+}
 
 const assignToAgent = async(req: Request, res: Response): Promise<void> => {
   const agentId = req.body.agentId;
@@ -65,4 +96,4 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getRuns, addRun, assignToAgent };
+export { getRuns, addRun, assignToAgent, findForAgent };
