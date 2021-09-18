@@ -70,9 +70,22 @@ describe('API', () => {
 
     const response = await postToAddRun(runParams);
     expect(response.status).toEqual(201);
+    expect(response.body.message).toEqual('Run added');
+    expect(response.body.run.executionStatus).toEqual('pending');
+    expect(response.body.run.availability).toEqual('available');
+    expect(response.body.run.test).toEqual(`${someTest.id}`);
 
     const countAfter = await Run.countDocuments();
     expect(countBefore + 1).toEqual(countAfter);
+
+    const newRunId = response.body.run._id;
+    const newRun = await Run.findById(newRunId);
+    if(newRun == null) {
+      throw new Error(`No Run with id ${newRunId} found in DB`);
+    }
+    expect(newRun.executionStatus).toEqual('pending');
+    expect(newRun.availability).toEqual('available');
+    expect(newRun.test == someTest.id).toBe(true);
   }
   )
 });
