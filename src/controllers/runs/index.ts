@@ -17,32 +17,34 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
 };
 
 const assignAgent = async(run: IRun, agent: IAgent): Promise<void> => {
-  await performViaAgent(
-    agent,
-    async () => {
-      run.availability = RunAvailability.taken;
-      run.agent = agent.id;
-      await run.save();
-    }
-  )
+  run.availability = RunAvailability.taken;
+  run.agent = agent.id;
+  await run.save();
 };
 
 const findForAgent = async(req: Request, res: Response): Promise<void> => {
   const agentId = req.body.agentId;
   const agent = await Agent.findById(agentId);
+
   if (agent == null) {
-    res.status(404).json({ message: `Agent with id ${req.body.agentId} not found` });
+    res.status(404).json({ message: `Agent with id ${agentId} not found` });
     return;
   }
 
-  const run = await Run.findOne({availability: 'available', executionStatus: 'pending'}  as FilterQuery<Schema>)
-  if (run == null) {
-    res.status(200).json({});
-    return;
-  }
+  const runQueryResult = await Run.findOne({availability: 'available', executionStatus: 'pending'}  as FilterQuery<Schema>)
 
-  assignAgent(run, agent);
-  res.status(200).json({runId: run.id});
+  performViaAgent(
+    agent,
+    async () => {
+      if (runQueryResult == null) {
+        res.status(200).json({});
+        return;
+      }
+      
+      await assignAgent(runQueryResult, agent);
+      res.status(200).json({runId: runQueryResult.id})
+    }
+  );
 }
 
 const assignToAgent = async(req: Request, res: Response): Promise<void> => {
