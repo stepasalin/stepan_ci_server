@@ -15,7 +15,6 @@ router.get('/all-runs', getRuns);
 router.post('/add-run', jsonParser, addRun);
 router.get('/all-agents', jsonParser, getAgents);
 router.post('/add-agent', jsonParser, addAgent);
-// router.post('/assign', jsonParser, assignToAgent);
 router.post('/get-run', jsonParser, findForAgent)
 
 export default router;
