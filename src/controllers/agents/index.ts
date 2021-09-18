@@ -1,6 +1,14 @@
 import { Response, Request } from 'express';
-import Agent from '../../models/agent';
+import {Agent} from '../../models/agent';
 import { IAgent } from '../../types/agent';
+
+type Action = () => Promise<void>;
+
+const performViaAgent = async (agent: IAgent, action: Action): Promise<void> => {
+  await action();
+  agent.lastActiveAt =  new Date();
+  await agent.save();
+}
 
 const getAgents = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -36,4 +44,4 @@ const addAgent = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: error });
   }
 };
-export { getAgents, addAgent };
+export { getAgents, addAgent, performViaAgent };
