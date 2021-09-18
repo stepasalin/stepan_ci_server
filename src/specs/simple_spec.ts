@@ -52,12 +52,13 @@ describe('API', () => {
     const runParams = {
       test: `${nonExistentId}`,
     };
+    const countBefore = await Run.countDocuments();
     const response = await postToAddRun(runParams);
     expect(JSON.parse(response.text).message).toEqual(
       `AutoTest with id ${nonExistentId} not found`
     );
     expect(response.status).toEqual(404);
-    const count = await Run.countDocuments();
-    expect(count).toEqual(0);
+    const countAfter = await Run.countDocuments();
+    expect(countBefore).toEqual(countAfter);
   });
 });
