@@ -88,11 +88,10 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
       });
 
       const newRun: IRun = await run.save();
-      const allRuns: IRun[] = await Run.find();
 
       res
         .status(201)
-        .json({ message: 'Run added', run: newRun, runs: allRuns });
+        .json({ message: 'Run added', run: newRun});
     }
   } catch (error) {
     throw error;

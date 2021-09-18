@@ -3,7 +3,7 @@ import db from '../database/connection';
 import { IAutoTest } from '../types/auto_test';
 import Test from '../models/auto_test';
 import { Schema } from 'mongoose';
-import Run from './../models/run';
+import Run from '../models/run';
 import request from 'supertest';
 
 async function postToAddRun(runParams: Record<string, unknown>) {
@@ -61,4 +61,18 @@ describe('API', () => {
     const countAfter = await Run.countDocuments();
     expect(countBefore).toEqual(countAfter);
   });
+
+  it('can add Run to existing Test', async () => {
+    const runParams = {
+      test : `${someTest.id}`
+    }
+    const countBefore = await Run.countDocuments();
+
+    const response = await postToAddRun(runParams);
+    expect(response.status).toEqual(201);
+
+    const countAfter = await Run.countDocuments();
+    expect(countBefore + 1).toEqual(countAfter);
+  }
+  )
 });
