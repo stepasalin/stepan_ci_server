@@ -1,7 +1,7 @@
 import { app } from '../app';
 import db from '../database/connection';
 import { IAutoTest } from '../types/auto_test';
-import Test from '../models/auto_test';
+import AutoTest from '../models/auto_test';
 import { Schema } from 'mongoose';
 import Run from '../models/run';
 import request from 'supertest';
@@ -28,7 +28,7 @@ describe('API', () => {
       status: 'who cares',
       runCmd: 'ls -la',
     };
-    const deletedTest: IAutoTest = new Test({
+    const deletedTest: IAutoTest = new AutoTest({
       ...sharedTestParams,
       ...{ name: 'This test will be deleted after I fetch id' },
     });
@@ -36,7 +36,7 @@ describe('API', () => {
     nonExistentId = deletedTest.id;
     await deletedTest.remove();
 
-    someTest = new Test({
+    someTest = new AutoTest({
       ...sharedTestParams,
       ...{ name: 'This test will be used to append runs to it' },
     });
