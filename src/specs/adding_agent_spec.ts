@@ -3,6 +3,7 @@ import db from '../database/connection';
 import { Agent } from '../models/agent';
 import { IAgent } from '../types/agent';
 import request from 'supertest';
+import { millisecondsSince } from '../util/milliseconds_since'
 
 async function postToAddAgent(agentParams: Record<string, unknown>) {
   const response = await request(app)
@@ -10,12 +11,6 @@ async function postToAddAgent(agentParams: Record<string, unknown>) {
     .send(agentParams)
     .set('Content-Type', 'application/json');
   return response;
-}
-
-function timePassedSince(someDate: Date) {
-  const now = new Date().getTime();
-  const timePassed = now - someDate.getTime();
-  return timePassed;
 }
 
 describe('Adding Agents', () => {
@@ -51,7 +46,7 @@ describe('Adding Agents', () => {
     expect(response.body.agent.status).toEqual('free');
     expect(response.body.agent.name).toEqual(agentCreatViaApiName);
     const lastActiveAt = new Date(response.body.agent.lastActiveAt);
-    expect(timePassedSince(lastActiveAt)).toBeLessThan(acceptableTimeInterval);
+    expect(millisecondsSince(lastActiveAt)).toBeLessThan(acceptableTimeInterval);
     const newAgentId = response.body.agent._id
     newAgent = await Agent.findById(newAgentId);
     if (newAgent == null){
