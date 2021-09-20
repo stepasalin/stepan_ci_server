@@ -6,6 +6,7 @@ export enum RunExecutionStatus {
   inProgress = 'inProgress',
   success = 'success',
   fail = 'fail',
+  ciError = 'ciError'
 }
 
 export enum RunAvailability {
