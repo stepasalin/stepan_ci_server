@@ -15,7 +15,7 @@ const autoTestSchema: Schema = new Schema(
 
     status: {
       type: String,
-      required: true,
+      required: false,
     },
 
     runCmd: {
