@@ -5,6 +5,7 @@ import AutoTest from '../models/auto_test';
 import { Schema } from 'mongoose';
 import Run from '../models/run';
 import request from 'supertest';
+import { IRun } from '../types/run';
 
 async function postToAddRun(runParams: Record<string, unknown>) {
   const response = await request(app)
@@ -17,6 +18,7 @@ async function postToAddRun(runParams: Record<string, unknown>) {
 describe('API', () => {
   let nonExistentId: Schema.Types.ObjectId;
   let someTest: IAutoTest;
+  let newRun :IRun | null;
 
   beforeAll(async () => {
     db.on('open', async () => {
@@ -44,7 +46,10 @@ describe('API', () => {
   });
 
   afterAll(async () => {
-    await db.dropDatabase();
+    await someTest.remove();
+    if(newRun != null){
+      await newRun.remove();
+    }
     return db.close();
   });
 
@@ -79,13 +84,13 @@ describe('API', () => {
     expect(countBefore + 1).toEqual(countAfter);
 
     const newRunId = response.body.run._id;
-    const newRun = await Run.findById(newRunId);
+    newRun = await Run.findById(newRunId);
     if(newRun == null) {
       throw new Error(`No Run with id ${newRunId} found in DB`);
     }
     expect(newRun.executionStatus).toEqual('pending');
     expect(newRun.availability).toEqual('available');
-    expect(newRun.test == someTest.id).toBe(true);
+    expect(newRun.test == someTest.id).toBe(true)
   }
-  )
+  );
 });

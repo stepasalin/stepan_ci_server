@@ -32,11 +32,10 @@ const addAgent = async (req: Request, res: Response): Promise<void> => {
       });
 
       const newAgent: IAgent = await agent.save();
-      const allAgents: IAgent[] = await Agent.find();
 
       res
         .status(201)
-        .json({ message: 'Agent added', run: newAgent, agents: allAgents });
+        .json({ message: 'Agent added', agent: newAgent});
     } else {
       res.status(422).json({ message: 'Agent already registered' });
     }
