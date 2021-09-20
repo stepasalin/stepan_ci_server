@@ -45,7 +45,13 @@ describe('API', () => {
     await someTest.save();
   });
 
-  
+  afterAll(async () => {
+    await someTest.remove();
+    if(newRun != null){
+      await newRun.remove();
+    }
+    return db.close();
+  });
 
   it('cannot add Run to non-existent Test', async () => {
     const runParams = {
@@ -87,12 +93,4 @@ describe('API', () => {
     expect(newRun.test == someTest.id).toBe(true)
   }
   );
-
-  afterAll(async () => {
-    await someTest.remove();
-    if(newRun != null){
-      await newRun.remove();
-    }
-    return db.close();
-  });
 });
