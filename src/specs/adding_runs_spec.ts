@@ -27,7 +27,6 @@ describe('Adding Runs', () => {
 
     const sharedTestParams = {
       description: 'Whatever',
-      status: 'who cares',
       runCmd: 'ls -la',
     };
     const deletedTest: IAutoTest = new AutoTest({
