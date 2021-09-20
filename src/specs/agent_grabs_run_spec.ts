@@ -3,7 +3,7 @@ import db from '../database/connection';
 import { Agent } from '../models/agent';
 import { IAgent } from '../types/agent';
 import request from 'supertest';
-// import { millisecondsSince } from '../util/milliseconds_since'
+import { millisecondsSince } from '../util/milliseconds_since'
 import { IAutoTest } from '../types/auto_test';
 import AutoTest from '../models/auto_test'
 import { IRun } from '../types/run';
@@ -17,9 +17,10 @@ async function postToGetRun(agentParams: Record<string, unknown>) {
   return response;
 }
 
+
 describe('Agent grabs Run', () => {
 
-  // const acceptableTimeInterval = 1000;
+  const acceptableTimeInterval = 1000;
   let agent: IAgent;
   let autoTest: IAutoTest;
   let run1: IRun;
@@ -31,6 +32,9 @@ describe('Agent grabs Run', () => {
     });
 
     agent = new Agent({name: 'AGENT_100500'});
+    // I want to emulate a situation where Agent was active a long time ago
+    // --------------------------------------------------   in a galaxy far far away
+    agent.lastActiveAt = new Date('2001-01-01');
     await agent.save();
 
     autoTest = new AutoTest({
@@ -58,11 +62,25 @@ describe('Agent grabs Run', () => {
   });
 
   it('can grab Run', async () => {
+    const run1Id = run1._id;
+    const agentId = agent._id;
     const response = await postToGetRun({agentId: agent._id})
 
+    const run1After = await Run.findById(run1Id);
+    if(run1After == null){
+      throw new Error(`There should have been a Run with id ${run1Id}`);
+    }
+    const agentAfter = await Agent.findById(agentId);
+    if(agentAfter == null){
+      throw new Error(`There should have been an Agent with id ${agentId}`);
+    }
+
     expect(response.status).toEqual(200);
-    expect(response.body.runId == run1._id).toBe(true);
-    console.log(run1);
+    expect(response.body.runId == run1Id).toBe(true);
+    expect(run1After.executionStatus).toEqual('pending');
+    expect(run1After.availability).toEqual('taken');
+    expect(run1After.agent == `${agent._id}`).toBe(true);
+    expect(millisecondsSince(agentAfter.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 })
 
