@@ -45,10 +45,7 @@ describe('Adding Runs', () => {
   });
 
   afterAll(async () => {
-    await someTest.remove();
-    if(newRun != null){
-      await newRun.remove();
-    }
+    await db.dropDatabase();
     return db.close();
   });
 

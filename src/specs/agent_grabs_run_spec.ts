@@ -6,7 +6,7 @@ import request from 'supertest';
 import { millisecondsSince } from '../util/milliseconds_since'
 import { IAutoTest } from '../types/auto_test';
 import AutoTest from '../models/auto_test'
-import { IRun } from '../types/run';
+import { IRun, RunAvailability } from '../types/run';
 import Run from '../models/run';
 
 async function postToGetRun(agentParams: Record<string, unknown>) {
@@ -19,7 +19,6 @@ async function postToGetRun(agentParams: Record<string, unknown>) {
 
 
 describe('Agent grabs Run', () => {
-
   const acceptableTimeInterval = 1000;
   let agent: IAgent;
   let autoTest: IAutoTest;
@@ -54,10 +53,11 @@ describe('Agent grabs Run', () => {
   });
 
   afterEach(async () => {
-    await agent.remove();
-    await autoTest.remove();
-    await run1.remove();
-    await run2.remove();
+    await db.dropDatabase();
+  });
+
+  afterAll(async () => {
+    run2;
     return db.close();
   });
 
@@ -80,6 +80,22 @@ describe('Agent grabs Run', () => {
     expect(run1After.executionStatus).toEqual('pending');
     expect(run1After.availability).toEqual('taken');
     expect(run1After.agent == `${agent._id}`).toBe(true);
+    expect(millisecondsSince(agentAfter.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
+  });
+
+  it('returns nothing if there are no Runs to grab', async () => {
+    run1.availability = RunAvailability.taken;
+    await run1.save();
+    
+    const agentId = agent._id;
+    const response = await postToGetRun({agentId: agentId});
+    const agentAfter = await Agent.findById(agentId);
+    if(agentAfter == null){
+      throw new Error(`There should have been an Agent with id ${agentId}`);
+    }
+
+    expect(response.status).toEqual(200);
+    expect(response.body).toEqual({});
     expect(millisecondsSince(agentAfter.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 })

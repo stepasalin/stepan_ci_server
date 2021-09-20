@@ -31,10 +31,7 @@ describe('Adding Agents', () => {
   });
 
   afterAll(async () => {
-    if(newAgent != null) {
-      await newAgent.remove();
-    }
-    await agentAlreadyInDb.remove();
+    await db.dropDatabase();
     return db.close();
   });
 
