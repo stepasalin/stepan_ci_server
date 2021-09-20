@@ -19,7 +19,6 @@ async function postToGetRun(agentParams: Record<string, unknown>) {
 
 
 describe('Agent grabs Run', () => {
-
   const acceptableTimeInterval = 1000;
   let agent: IAgent;
   let autoTest: IAutoTest;
@@ -54,10 +53,11 @@ describe('Agent grabs Run', () => {
   });
 
   afterEach(async () => {
-    await agent.remove();
-    await autoTest.remove();
-    await run1.remove();
-    await run2.remove();
+    await db.dropDatabase();
+  });
+
+  afterAll(async () => {
+    console.log(run2);
     return db.close();
   });
 
@@ -82,5 +82,14 @@ describe('Agent grabs Run', () => {
     expect(run1After.agent == `${agent._id}`).toBe(true);
     expect(millisecondsSince(agentAfter.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
+
+  // it('returns nothing if there are no Runs to grab', async () => {
+  //   run1.availability = RunAvailability.taken;
+  //   await run1.save();
+    
+  //   const response = await postToGetRun({agentId: agent._id});
+  //   expect(response.status).toEqual(200);
+  //   console.log(response.body);
+  // });
 })
 
