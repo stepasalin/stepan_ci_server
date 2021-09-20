@@ -34,7 +34,7 @@ describe('Agent grabs Run', () => {
     await agent.save();
 
     autoTest = new AutoTest({
-      name: '',
+      name: 'blah blah whatevs',
       description: 'for auto test, normally you should not see this id DB',
       runCmd: 'ls -la'
     });
@@ -61,7 +61,8 @@ describe('Agent grabs Run', () => {
     const response = await postToGetRun({agentId: agent._id})
 
     expect(response.status).toEqual(200);
-    expect(response.body.runId).toEqual(run1._id);
+    expect(response.body.runId == run1._id).toBe(true);
+    console.log(run1);
   });
 })
 
