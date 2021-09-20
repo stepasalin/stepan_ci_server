@@ -64,8 +64,6 @@ describe('Adding Agents', () => {
     expect(response.status).toEqual(422);
     expect(response.body.message).toEqual('Agent already registered')
     expect(agentCountAfter).toEqual(agentCountBefore)
-    console.log(response.status)
-    console.log(response.body);
   });
 })
 
