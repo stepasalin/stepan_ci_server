@@ -15,13 +15,12 @@ const addTest = async (req: Request, res: Response): Promise<void> => {
   try {
     const body = req.body as Pick<
       IAutoTest,
-      'name' | 'description' | 'status' | 'runCmd'
+      'name' | 'description' | 'runCmd'
     >;
 
     const autoTest: IAutoTest = new AutoTest({
       name: body.name,
       description: body.description,
-      status: body.status,
       runCmd: body.runCmd,
     });
 

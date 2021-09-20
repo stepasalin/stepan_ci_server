@@ -15,7 +15,7 @@ async function postToAddRun(runParams: Record<string, unknown>) {
   return response;
 }
 
-describe('API', () => {
+describe('Adding Runs', () => {
   let nonExistentId: Schema.Types.ObjectId;
   let someTest: IAutoTest;
   let newRun :IRun | null;
@@ -27,7 +27,6 @@ describe('API', () => {
 
     const sharedTestParams = {
       description: 'Whatever',
-      status: 'who cares',
       runCmd: 'ls -la',
     };
     const deletedTest: IAutoTest = new AutoTest({

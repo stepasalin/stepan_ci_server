@@ -13,11 +13,6 @@ const autoTestSchema: Schema = new Schema(
       required: true,
     },
 
-    status: {
-      type: String,
-      required: true,
-    },
-
     runCmd: {
       type: String,
       required: true,
