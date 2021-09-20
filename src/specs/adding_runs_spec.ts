@@ -15,7 +15,7 @@ async function postToAddRun(runParams: Record<string, unknown>) {
   return response;
 }
 
-describe('API', () => {
+describe('Adding Runs', () => {
   let nonExistentId: Schema.Types.ObjectId;
   let someTest: IAutoTest;
   let newRun :IRun | null;
