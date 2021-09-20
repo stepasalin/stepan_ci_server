@@ -42,6 +42,7 @@ describe('Adding Agents', () => {
     const agentCountBefore = await Agent.countDocuments();
     const response = await postToAddAgent({name: agentCreatViaApiName})
 
+    expect(response.status).toEqual(201);
     expect(response.body.message).toEqual('Agent added');
     expect(response.body.agent.status).toEqual('free');
     expect(response.body.agent.name).toEqual(agentCreatViaApiName);
@@ -54,6 +55,17 @@ describe('Adding Agents', () => {
     }
     const agentCountAfter = await Agent.countDocuments();
     expect(agentCountAfter).toEqual(agentCountBefore + 1);
+  });
+
+  it('cannot register another agent with the same name', async () =>{
+    const agentCountBefore = await Agent.countDocuments();
+    const response = await postToAddAgent({name: agentAlreadyInDbName})
+    const agentCountAfter = await Agent.countDocuments();
+    expect(response.status).toEqual(422);
+    expect(response.body.message).toEqual('Agent already registered')
+    expect(agentCountAfter).toEqual(agentCountBefore)
+    console.log(response.status)
+    console.log(response.body);
   });
 })
 
