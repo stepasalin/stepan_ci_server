@@ -8,6 +8,7 @@ import { IAutoTest } from '../types/auto_test';
 import AutoTest from '../models/auto_test'
 import { IRun, RunAvailability } from '../types/run';
 import Run from '../models/run';
+import { refreshRun, refreshAgent } from '../util/refresh_document';
 
 async function postToGetRun(agentParams: Record<string, unknown>) {
   const response = await request(app)
@@ -62,41 +63,29 @@ describe('Agent grabs Run', () => {
   });
 
   it('can grab Run', async () => {
-    const run1Id = run1._id;
-    const agentId = agent._id;
     const response = await postToGetRun({agentId: agent._id})
 
-    const run1After = await Run.findById(run1Id);
-    if(run1After == null){
-      throw new Error(`There should have been a Run with id ${run1Id}`);
-    }
-    const agentAfter = await Agent.findById(agentId);
-    if(agentAfter == null){
-      throw new Error(`There should have been an Agent with id ${agentId}`);
-    }
+    run1 = await refreshRun(run1);
+    agent = await refreshAgent(agent);
 
     expect(response.status).toEqual(200);
-    expect(response.body.runId == run1Id).toBe(true);
-    expect(run1After.executionStatus).toEqual('pending');
-    expect(run1After.availability).toEqual('taken');
-    expect(run1After.agent == `${agent._id}`).toBe(true);
-    expect(millisecondsSince(agentAfter.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
+    expect(response.body.runId == run1._id).toBe(true);
+    expect(run1.executionStatus).toEqual('pending');
+    expect(run1.availability).toEqual('taken');
+    expect(run1.agent == `${agent._id}`).toBe(true);
+    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 
   it('returns nothing if there are no Runs to grab', async () => {
     run1.availability = RunAvailability.taken;
     await run1.save();
     
-    const agentId = agent._id;
-    const response = await postToGetRun({agentId: agentId});
-    const agentAfter = await Agent.findById(agentId);
-    if(agentAfter == null){
-      throw new Error(`There should have been an Agent with id ${agentId}`);
-    }
+    const response = await postToGetRun({agentId: agent._id});
+    agent = await refreshAgent(agent);
 
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({});
-    expect(millisecondsSince(agentAfter.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
+    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 })
 
