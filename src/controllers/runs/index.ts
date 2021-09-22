@@ -18,7 +18,7 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
 
 const assignAgent = async(run: IRun, agent: IAgent): Promise<void> => {
   run.availability = RunAvailability.taken;
-  run.agent = agent.id;
+  run.agent = agent;
   await run.save();
 };
 

@@ -72,7 +72,7 @@ describe('Agent grabs Run', () => {
     expect(response.body.runId == run1._id).toBe(true);
     expect(run1.executionStatus).toEqual('pending');
     expect(run1.availability).toEqual('taken');
-    expect(run1.agent == `${agent._id}`).toBe(true);
+    expect(run1.agent).toEqual(agent._id);
     expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 
