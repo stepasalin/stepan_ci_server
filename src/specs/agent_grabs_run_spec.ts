@@ -9,6 +9,7 @@ import AutoTest from '../models/auto_test'
 import { IRun, RunAvailability } from '../types/run';
 import Run from '../models/run';
 import { refreshRun, refreshAgent } from '../util/refresh_document';
+import { fileExists } from '../util/fileExists';
 
 async function postToGetRun(agentParams: Record<string, unknown>) {
   const response = await request(app)
@@ -73,6 +74,8 @@ describe('Agent grabs Run', () => {
     expect(run1.executionStatus).toEqual('pending');
     expect(run1.availability).toEqual('taken');
     expect(run1.agent).toEqual(agent._id);
+    expect(run1.logPath).toEqual(`./runLogs/${run1._id}.log`)
+    expect(await fileExists(run1.logPath)).toBe(true);
     expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 

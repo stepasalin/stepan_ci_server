@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "NODE_ENV=test jest --runInBand",
+    "clear_logs": "rm runLogs/*",
     "start": "NODE_ENV=production node build/index.js",
     "dev": "NODE_ENV=development ts-node-dev src/index.ts",
     "ololo": "NODE_ENV=development ts-node-dev src/ololo.ts",
