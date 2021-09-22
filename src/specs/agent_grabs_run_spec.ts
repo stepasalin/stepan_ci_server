@@ -70,13 +70,13 @@ describe('Agent grabs Run', () => {
     agent = await refreshAgent(agent);
 
     expect(response.status).toEqual(200);
+    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
     expect(response.body.runId == run1._id).toBe(true);
     expect(run1.executionStatus).toEqual('pending');
     expect(run1.availability).toEqual('taken');
     expect(run1.agent).toEqual(agent._id);
     expect(run1.logPath).toEqual(`./runLogs/${run1._id}.log`)
     expect(await fileExists(run1.logPath)).toBe(true);
-    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 
   it('returns nothing if there are no Runs to grab', async () => {
