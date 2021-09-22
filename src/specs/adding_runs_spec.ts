@@ -6,6 +6,7 @@ import { Schema } from 'mongoose';
 import Run from '../models/run';
 import request from 'supertest';
 import { IRun } from '../types/run';
+import { mustExist} from '../util/assertions'
 
 async function postToAddRun(runParams: Record<string, unknown>) {
   const response = await request(app)
@@ -80,13 +81,11 @@ describe('Adding Runs', () => {
     expect(countBefore + 1).toEqual(countAfter);
 
     const newRunId = response.body.run._id;
-    newRun = await Run.findById(newRunId);
-    if(newRun == null) {
-      throw new Error(`No Run with id ${newRunId} found in DB`);
-    }
+    newRun = mustExist(await Run.findById(newRunId));
+
     expect(newRun.executionStatus).toEqual('pending');
     expect(newRun.availability).toEqual('available');
-    expect(newRun.test == someTest.id).toBe(true)
+    expect(newRun.test).toEqual(someTest._id)
   }
   );
 });
