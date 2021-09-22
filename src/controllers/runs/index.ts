@@ -6,6 +6,8 @@ import { IAgent } from '../../types/agent';
 import { Agent } from '../../models/agent'
 import { performViaAgent } from '../../controllers/agents/index'
 import { FilterQuery, Schema } from 'mongoose';
+import touch from 'touch';
+import mkpath from 'mkpath';
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -17,8 +19,12 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
 };
 
 const assignAgent = async(run: IRun, agent: IAgent): Promise<void> => {
+  mkpath.sync('./runLogs')
+  const logPath = `./runLogs/${run._id}.log`;
+  touch.sync(logPath);
   run.availability = RunAvailability.taken;
   run.agent = agent;
+  run.logPath = logPath;
   await run.save();
 };
 

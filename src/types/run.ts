@@ -20,4 +20,5 @@ export interface IRun extends Document {
   executionStatus: RunExecutionStatus;
   availability: RunAvailability;
   test: IAutoTest;
+  logPath: string;
 }
