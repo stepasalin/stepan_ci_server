@@ -28,7 +28,6 @@ async function postToAppendLog(appendLogParams: Record<string, unknown>) {
   return response;
 }
 
-
 async function setAgentLastActive(agent: IAgent, dateString: string) {
   agent.lastActiveAt = new Date(dateString);
   await agent.save();
