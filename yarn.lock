@@ -1021,6 +1021,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mkpath@npm:^0.1.29":
+  version: 0.1.29
+  resolution: "@types/mkpath@npm:0.1.29"
+  checksum: 1728f20c91ca6bc14cfeb40b683a279176f7c353e39c2237652765dd801a5ee35e41bb5059a03035dcd2549180c5361b93f700262fd2af3daff8d1ced62658e7
+  languageName: node
+  linkType: hard
+
 "@types/mongodb@npm:^3.5.27":
   version: 3.6.20
   resolution: "@types/mongodb@npm:3.6.20"
@@ -1200,6 +1207,15 @@ __metadata:
   dependencies:
     "@types/superagent": "*"
   checksum: 291abc0d37abe833d517fcfd0c22d51e7d5ffea85ce990603a0d058afa7fe2465b1251d50642ddfd640f66d047029af512793215b612c39adbee72fae5b2ef4f
+  languageName: node
+  linkType: hard
+
+"@types/touch@npm:^3":
+  version: 3.1.2
+  resolution: "@types/touch@npm:3.1.2"
+  dependencies:
+    "@types/node": "*"
+  checksum: f773e644c9145310b3b4498f9be0d0adf8c9876d97909cb4e595ff6b0f7c9501c7e6a47725c2c0982910eb95359bec88b2b1cfe0050a012a8f5d1b8a9db7f8a2
   languageName: node
   linkType: hard
 
@@ -5024,6 +5040,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mkpath@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "mkpath@npm:1.0.0"
+  checksum: e43ae9740e337bd12b82efb284be03459a65bb2ae01560c3ce213b988a3504647ce5dcfead0a29c6aa9bd1655084ca71e338bc77e86cb8a5090bddc846536691
+  languageName: node
+  linkType: hard
+
 "mongodb@npm:3.6.10":
   version: 3.6.10
   resolution: "mongodb@npm:3.6.10"
@@ -6464,10 +6487,12 @@ __metadata:
     "@types/fs-extra": ^9.0.12
     "@types/jest": ^27.0.1
     "@types/lodash": ^4.14.171
+    "@types/mkpath": ^0.1.29
     "@types/node": ^16.4.0
     "@types/pino": ^6.3.9
     "@types/redis": ^2.8.31
     "@types/supertest": ^2.0.11
+    "@types/touch": ^3
     "@typescript-eslint/eslint-plugin": ^4.28.3
     "@typescript-eslint/parser": ^4.28.3
     body-parser: ^1.19.0
@@ -6485,6 +6510,7 @@ __metadata:
     lint-staged: ">=10"
     lodash: ^4.17.21
     lodash-es: ^4.17.21
+    mkpath: ^1.0.0
     mongoose: ^5.13.3
     nodemon: ^2.0.12
     pino: ^6.12.0
@@ -6493,6 +6519,7 @@ __metadata:
     prettier: ^2.4.0
     redis: ^3.1.2
     supertest: ^6.1.6
+    touch: ^3.1.0
     ts-jest: ^27.0.5
     ts-node: ^10.1.0
     ts-node-dev: ^1.1.8

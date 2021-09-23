@@ -28,6 +28,11 @@ const runSchema: Schema = new Schema(
       ref: 'Test',
       required: true,
     },
+
+    logPath: {
+      type: String,
+      required: false
+    }
   },
   { timestamps: true }
 );
