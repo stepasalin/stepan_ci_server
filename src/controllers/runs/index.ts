@@ -98,14 +98,17 @@ const appendLog = async(req: Request, res: Response): Promise<void> => {
         res.status(404).json({ message: `Run with id ${runId} not found` }); 
         return;
       };
-      if (run.agent != agent._id) {
+      if (!run.agent.equals(agent._id)) {
         res.status(422).json({ message: `Run with id ${runId} not assigned to Agent ${agentId}`})
-        return
+        return;
       }
       fs.appendFileSync(`${run.logPath}`, newLogContent);
-      res.status(200);
+      res.status(200).json({});
+      return;
     }
   );
+
+  return;
 }
 
 const addRun = async (req: Request, res: Response): Promise<void> => {
