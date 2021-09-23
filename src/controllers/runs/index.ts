@@ -8,6 +8,8 @@ import { performViaAgent } from '../../controllers/agents/index'
 import { FilterQuery, Schema } from 'mongoose';
 import touch from 'touch';
 import mkpath from 'mkpath';
+import fs from 'fs';
+
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -80,6 +82,32 @@ const assignToAgent = async(req: Request, res: Response): Promise<void> => {
   res.status(200).json({ message: 'OK' });
 }
 
+const appendLog = async(req: Request, res: Response): Promise<void> => {
+  const { runId, agentId, newLogContent } = req.body;
+  
+  const agent = await Agent.findById(agentId);
+   if (agent == null) {
+    res.status(404).json({ message: `Agent with id ${agentId} not found` });
+    return;
+  }
+  performViaAgent(
+    agent,
+    async () => {
+      const run = await Run.findById(runId)
+      if (run == null) {
+        res.status(404).json({ message: `Run with id ${runId} not found` }); 
+        return;
+      };
+      if (run.agent != agent._id) {
+        res.status(422).json({ message: `Run with id ${runId} not assigned to Agent ${agentId}`})
+        return
+      }
+      fs.appendFileSync(`${run.logPath}`, newLogContent);
+      res.status(200);
+    }
+  );
+}
+
 const addRun = async (req: Request, res: Response): Promise<void> => {
   try {
     const body = req.body as Pick<IRun, 'agent' | 'executionStatus' | 'availability' | 'test'>;
@@ -103,4 +131,4 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getRuns, addRun, assignToAgent, findForAgent };
+export { getRuns, addRun, assignToAgent, findForAgent, appendLog };
