@@ -10,6 +10,7 @@ import { IRun, RunAvailability } from '../types/run';
 import Run from '../models/run';
 import { refreshRun, refreshAgent } from '../util/refresh_document';
 import { fileExists } from '../util/fileExists';
+import { readFileSync } from 'fs-extra';
 
 async function postToGetRun(agentParams: Record<string, unknown>) {
   const response = await request(app)
@@ -40,7 +41,7 @@ describe('Agent grabs Run', () => {
   let run1: IRun;
   let run2: IRun;
   const logstring1 = "logString1 yatta-yarra \n";
-  // const logstring2 = "logString2 whatever \n";
+  const logstring2 = "logString2 whatever \n";
 
   beforeEach(async () => {
     db.on('open', async () => {
@@ -98,10 +99,14 @@ describe('Agent grabs Run', () => {
     const responseToAppendLog1 = await postToAppendLog(
       {agentId: agent._id, runId: run1._id, newLogContent: logstring1}
     )
-    // console.log({agentId: agent._id, runId: run1._id, newLogContent: logstring1});
-    // console.log(await refreshRun(run1));
-    // console.log(await refreshAgent(agent));
     expect(responseToAppendLog1.status).toEqual(200);
+    expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1);
+
+    const responseToAppendLog2 = await postToAppendLog(
+      {agentId: agent._id, runId: run1._id, newLogContent: logstring2}
+    )
+    expect(responseToAppendLog2.status).toEqual(200);
+    expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1 + logstring2);
   });
 
   it('returns nothing if there are no Runs to grab', async () => {
@@ -112,7 +117,6 @@ describe('Agent grabs Run', () => {
     agent = await refreshAgent(agent);
 
     expect(response.status).toEqual(200);
-    expect(response.body).toEqual({});
     expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 })
