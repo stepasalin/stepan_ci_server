@@ -121,10 +121,9 @@ describe('Agent grabs Run', () => {
     );
     expect(responseToRunStatusUpdate1.status).toEqual(200);
     run1 = await refreshRun(run1);
-    console.log('+++++++++++++++++++')
-    console.log(run1)
-    console.log('+++++++++++++++++++')
-
+    agent = await refreshAgent(agent);
+    expect(run1.executionStatus).toEqual('inProgress');
+    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 
   it('returns nothing if there are no Runs to grab and provides a Run as soon as it is available', async () => {
