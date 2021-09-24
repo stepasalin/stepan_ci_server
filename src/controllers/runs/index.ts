@@ -9,6 +9,7 @@ import { FilterQuery, Schema } from 'mongoose';
 import touch from 'touch';
 import mkpath from 'mkpath';
 import fs from 'fs';
+import { mustExist } from '../../util/assertions';
 
 
 const getRuns = async (req: Request, res: Response): Promise<void> => {
@@ -80,6 +81,36 @@ const assignToAgent = async(req: Request, res: Response): Promise<void> => {
   }
   );
   res.status(200).json({ message: 'OK' });
+}
+
+const getRunCmd = async(req: Request, res: Response): Promise<void> => {
+  const { runId, agentId } = req.query;
+
+  const agent = await Agent.findById(agentId);
+   if (agent == null) {
+    res.status(404).json({ message: `Agent with id ${agentId} not found` });
+    return;
+  }
+
+  performViaAgent(
+    agent,
+    async () => {
+      const run = await Run.findById(runId)
+      if (run == null) {
+        res.status(404).json({ message: `Run with id ${runId} not found` }); 
+        return;
+      };
+      if (!run.agent.equals(agent._id)) {
+        res.status(422).json({ message: `Run with id ${runId} not assigned to Agent ${agentId}`})
+        return;
+      }
+
+      const autoTest = mustExist(await AutoTest.findById(run.test));
+      res.status(200).json({runCmd: autoTest.runCmd});
+      return;
+    }
+  );
+  return;
 }
 
 const appendLog = async(req: Request, res: Response): Promise<void> => {
@@ -166,4 +197,4 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getRuns, addRun, assignToAgent, findForAgent, appendLog, updateRunStatus };
+export { getRuns, addRun, assignToAgent, findForAgent, appendLog, updateRunStatus, getRunCmd };
