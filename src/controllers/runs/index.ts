@@ -133,12 +133,15 @@ const updateRunStatus = async (req: Request, res: Response): Promise<void> => {
         return;
       }
       run.executionStatus = newExecutionStatus;
+
       await run.save();
+      res.status(200).json({});
       return;
     }
   );
 
-}
+  return;
+};
 
 const addRun = async (req: Request, res: Response): Promise<void> => {
   try {
