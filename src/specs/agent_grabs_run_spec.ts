@@ -36,6 +36,15 @@ async function postToUpdateRunStatus(runUpdateParams: Record<string, unknown>) {
   return response;
 }
 
+async function getRunCmd(runInfo: Record<string, unknown>) {
+  const agentId = runInfo.agentId;
+  const runId = runInfo.runId;
+  const response = await request(app)
+    .get(`/run-command?agentId=${agentId}&runId=${runId}`)
+    .set('Content-Type', 'application/json');
+  return response;
+}
+
 async function setAgentLastActive(agent: IAgent, dateString: string) {
   agent.lastActiveAt = new Date(dateString);
   await agent.save();
@@ -63,7 +72,7 @@ describe('Agent grabs Run', () => {
     autoTest = new AutoTest({
       name: 'blah blah whatevs',
       description: 'for auto test, normally you should not see this id DB',
-      runCmd: 'ls -la'
+      runCmd: 'rspec run_the_goddamn_spec.rb'
     });
     await autoTest.save();
 
@@ -114,7 +123,7 @@ describe('Agent grabs Run', () => {
     expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1 + logstring2);
 
     // again, let's send agent to the past 
-    // to ensure appending logs also updated lastActiveAt
+    // to ensure changing status also updated lastActiveAt
     await setAgentLastActive(agent, '2001-01-01');
     const responseToRunStatusUpdate1 = await postToUpdateRunStatus(
       {agentId: agent._id, runId: run1._id, newExecutionStatus: 'inProgress'}
@@ -123,6 +132,15 @@ describe('Agent grabs Run', () => {
     run1 = await refreshRun(run1);
     agent = await refreshAgent(agent);
     expect(run1.executionStatus).toEqual('inProgress');
+    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
+
+     // again, let's send agent to the past 
+    // to ensure getting runCmd also updated lastActiveAt
+    await setAgentLastActive(agent, '2001-01-01');
+    const responseToGetRunCmd = await getRunCmd({agentId: agent._id, runId: run1._id});
+    expect(responseToGetRunCmd.status).toEqual(200);
+    expect(responseToGetRunCmd.body).toEqual({runCmd: autoTest.runCmd});
+    agent =  await refreshAgent(agent);
     expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 
