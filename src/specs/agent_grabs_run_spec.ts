@@ -28,6 +28,14 @@ async function postToAppendLog(appendLogParams: Record<string, unknown>) {
   return response;
 }
 
+async function postToUpdateRunStatus(runUpdateParams: Record<string, unknown>) {
+  const response = await request(app)
+    .post('/upate-run-status')
+    .send(runUpdateParams)
+    .set('Content-Type', 'application/json');
+  return response;
+}
+
 async function setAgentLastActive(agent: IAgent, dateString: string) {
   agent.lastActiveAt = new Date(dateString);
   await agent.save();
@@ -104,6 +112,18 @@ describe('Agent grabs Run', () => {
     )
     expect(responseToAppendLog2.status).toEqual(200);
     expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1 + logstring2);
+
+    // again, let's send agent to the past 
+    // to ensure appending logs also updated lastActiveAt
+    await setAgentLastActive(agent, '2001-01-01');
+    const responseToRunStatusUpdate1 = await postToUpdateRunStatus(
+      {agentId: agent._id, runId: run1._id, newExecutionStatus: 'inProgress'}
+    );
+    expect(responseToRunStatusUpdate1.status).toEqual(200);
+    run1 = await refreshRun(run1);
+    agent = await refreshAgent(agent);
+    expect(run1.executionStatus).toEqual('inProgress');
+    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
   });
 
   it('returns nothing if there are no Runs to grab and provides a Run as soon as it is available', async () => {

@@ -111,6 +111,38 @@ const appendLog = async(req: Request, res: Response): Promise<void> => {
   return;
 }
 
+const updateRunStatus = async (req: Request, res: Response): Promise<void> => {
+  const { runId, agentId, newExecutionStatus } = req.body;
+
+  const agent = await Agent.findById(agentId);
+   if (agent == null) {
+    res.status(404).json({ message: `Agent with id ${agentId} not found` });
+    return;
+  }
+
+  performViaAgent(
+    agent,
+    async () => {
+      const run = await Run.findById(runId)
+      if (run == null) {
+        res.status(404).json({ message: `Run with id ${runId} not found` });
+        return;
+      };
+      if (!run.agent.equals(agent._id)) {
+        res.status(422).json({ message: `Run with id ${runId} not assigned to Agent ${agentId}`})
+        return;
+      }
+      run.executionStatus = newExecutionStatus;
+
+      await run.save();
+      res.status(200).json({});
+      return;
+    }
+  );
+
+  return;
+};
+
 const addRun = async (req: Request, res: Response): Promise<void> => {
   try {
     const body = req.body as Pick<IRun, 'agent' | 'executionStatus' | 'availability' | 'test'>;
@@ -134,4 +166,4 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getRuns, addRun, assignToAgent, findForAgent, appendLog };
+export { getRuns, addRun, assignToAgent, findForAgent, appendLog, updateRunStatus };
