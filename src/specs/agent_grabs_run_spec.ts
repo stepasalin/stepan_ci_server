@@ -64,8 +64,6 @@ describe('Agent grabs Run', () => {
     run2 = new Run({test: autoTest._id});
     // run2 should not be saved just yet, we want to emulate the situation
     // where run2 was created some time after run1 started
-    // "some time" could vary, bringing about
-    // a number of cases I'll cover in this spec
   });
 
   afterEach(async () => {
@@ -92,7 +90,7 @@ describe('Agent grabs Run', () => {
     expect(run1.logPath).toEqual(`./runLogs/${run1._id}.log`)
     expect(await fileExists(run1.logPath)).toBe(true);
 
-    // again, let's send agent to past 
+    // again, let's send agent to the past 
     // to ensure appending logs also updated lastActiveAt
     await setAgentLastActive(agent, '2001-01-01');
     const responseToAppendLog1 = await postToAppendLog(
@@ -108,15 +106,24 @@ describe('Agent grabs Run', () => {
     expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1 + logstring2);
   });
 
-  it('returns nothing if there are no Runs to grab', async () => {
+  it('returns nothing if there are no Runs to grab and provides a Run as soon as it is available', async () => {
     run1.availability = RunAvailability.taken;
     await run1.save();
     
-    const response = await postToGetRun({agentId: agent._id});
+    const response1 = await postToGetRun({agentId: agent._id});
     agent = await refreshAgent(agent);
 
-    expect(response.status).toEqual(200);
+    expect(response1.status).toEqual(200);
+    expect(response1.body).toEqual({});
     expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
+
+    await run2.save();
+    const response2 = await postToGetRun({agentId: agent._id});
+    expect(response1.status).toEqual(200);
+    // this should suffice because 
+    // provided above is a
+    // rigorous test for every response parameter
+    expect(response2.body == {}).toBe(false);
   });
 })
 
