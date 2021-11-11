@@ -43,4 +43,26 @@ const addAgent = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: error });
   }
 };
-export { getAgents, addAgent, performViaAgent };
+
+const updateAgentStatus = async (req: Request, res: Response): Promise<void> => {
+  const { agentId, newStatus } = req.body;
+
+  const agent = await Agent.findById({ agentId });
+
+  if (agent == null) {
+    res.status(404).json({ message: `Agent ${agentId} not found`})
+  }
+  else{
+    performViaAgent(
+    agent,
+    async () => {
+      agent.status = newStatus;
+      await agent.save();
+      res.status(200).json({});
+      return;
+    }
+  );
+  };
+};
+
+export { getAgents, addAgent, performViaAgent, updateAgentStatus };
