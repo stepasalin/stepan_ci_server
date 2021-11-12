@@ -46,8 +46,10 @@ const addAgent = async (req: Request, res: Response): Promise<void> => {
 
 const updateAgentStatus = async (req: Request, res: Response): Promise<void> => {
   const { agentId, newStatus } = req.body;
+  console.log(`Agent ID: ${agentId}`);
+  console.log(`New Status: ${newStatus}`);
 
-  const agent = await Agent.findById({ agentId });
+  const agent = await Agent.findById(agentId);
 
   if (agent == null) {
     res.status(404).json({ message: `Agent ${agentId} not found`})

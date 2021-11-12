@@ -36,6 +36,16 @@ async function postToUpdateRunStatus(runUpdateParams: Record<string, unknown>) {
   return response;
 }
 
+async function postToUpdateAgentStatus(agentUpdateParams: Record<string, unknown>) {
+  const response = await request(app)
+    .post('/update-agent-status')
+    .send(agentUpdateParams)
+    .set('Content-Type', 'application/json');
+  return response;
+}
+
+
+
 async function getRunCmd(runInfo: Record<string, unknown>) {
   const agentId = runInfo.agentId;
   const runId = runInfo.runId;
@@ -93,6 +103,7 @@ describe('Agent grabs Run', () => {
   });
 
   it('can grab Run and append Log', async () => {
+    expect(agent.status).toEqual('free');
     const responseToGetRun = await postToGetRun({agentId: agent._id})
 
     run1 = await refreshRun(run1);
@@ -106,6 +117,16 @@ describe('Agent grabs Run', () => {
     expect(run1.agent).toEqual(agent._id);
     expect(run1.logPath).toEqual(`./runLogs/${run1._id}.log`)
     expect(await fileExists(run1.logPath)).toBe(true);
+
+
+    // again, let's send agent to the past 
+    // to ensure updating agent status also updated lastActiveAt
+    await setAgentLastActive(agent, '2001-01-01');
+    const responseToUpdateAgentStatus = await postToUpdateAgentStatus({agentId: agent._id, newStatus: 'busy'})
+    expect(responseToUpdateAgentStatus.status).toEqual(200);
+    agent = await refreshAgent(agent);
+    expect(agent.status).toEqual('busy');
+    expect(millisecondsSince(agent.lastActiveAt)).toBeLessThan(acceptableTimeInterval);
 
     // again, let's send agent to the past 
     // to ensure appending logs also updated lastActiveAt
