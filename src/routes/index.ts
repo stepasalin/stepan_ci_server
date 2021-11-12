@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getTests, addTest } from '../controllers/auto_tests';
 import { getRuns, addRun, findForAgent, appendLog, updateRunStatus, getRunCmd } from '../controllers/runs';
-import { getAgents, addAgent } from '../controllers/agents';
+import { getAgents, addAgent, updateAgentStatus } from '../controllers/agents';
 import bodyParser from 'body-parser';
 
 const jsonParser = bodyParser.json();
@@ -19,6 +19,7 @@ router.post('/get-run', jsonParser, findForAgent);
 router.post('/append-log', jsonParser, appendLog);
 router.post('/upate-run-status', jsonParser, updateRunStatus);
 router.get('/run-command', jsonParser, getRunCmd);
+router.post('/update-agent-status', jsonParser, updateAgentStatus);
 
 
 export default router;
