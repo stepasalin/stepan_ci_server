@@ -9,7 +9,7 @@ import AutoTest from '../models/auto_test'
 import { IRun, RunAvailability } from '../types/run';
 import Run from '../models/run';
 import { refreshRun, refreshAgent } from '../util/refresh_document';
-import { fileExists } from '../util/fileExists';
+import { fileExists } from '../util/fsStuff';
 import { readFileSync } from 'fs-extra';
 
 async function postToGetRun(agentParams: Record<string, unknown>) {
