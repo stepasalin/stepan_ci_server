@@ -58,7 +58,6 @@ async function getRunCmd(runInfo: Record<string, unknown>) {
 async function getRunLog(runId: string) {
   const response = await request(app)
     .get(`/run-log?runId=${runId}`);
-    // .set('Content-Type', 'text/plain');
   return response;
 }
 
