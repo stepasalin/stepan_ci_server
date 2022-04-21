@@ -55,6 +55,13 @@ async function getRunCmd(runInfo: Record<string, unknown>) {
   return response;
 }
 
+async function getRunLog(runId: string) {
+  const response = await request(app)
+    .get(`/run-log?runId=${runId}`);
+    // .set('Content-Type', 'text/plain');
+  return response;
+}
+
 async function setAgentLastActive(agent: IAgent, dateString: string) {
   agent.lastActiveAt = new Date(dateString);
   await agent.save();
@@ -136,12 +143,16 @@ describe('Agent grabs Run', () => {
     )
     expect(responseToAppendLog1.status).toEqual(200);
     expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1);
+    const responseToGetRunLog1 = await getRunLog(run1.id)
+    expect(responseToGetRunLog1.text).toEqual(logstring1)
 
     const responseToAppendLog2 = await postToAppendLog(
       {agentId: agent._id, runId: run1._id, newLogContent: logstring2}
     )
     expect(responseToAppendLog2.status).toEqual(200);
     expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1 + logstring2);
+    const responseToGetRunLog2 = await getRunLog(run1.id)
+    expect(responseToGetRunLog2.text).toEqual(logstring1 + logstring2)
 
     // again, let's send agent to the past 
     // to ensure changing status also updated lastActiveAt
