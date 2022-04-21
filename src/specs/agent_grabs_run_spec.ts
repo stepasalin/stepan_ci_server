@@ -9,7 +9,7 @@ import AutoTest from '../models/auto_test'
 import { IRun, RunAvailability } from '../types/run';
 import Run from '../models/run';
 import { refreshRun, refreshAgent } from '../util/refresh_document';
-import { fileExists } from '../util/fileExists';
+import { fileExists } from '../util/fsStuff';
 import { readFileSync } from 'fs-extra';
 
 async function postToGetRun(agentParams: Record<string, unknown>) {
@@ -52,6 +52,12 @@ async function getRunCmd(runInfo: Record<string, unknown>) {
   const response = await request(app)
     .get(`/run-command?agentId=${agentId}&runId=${runId}`)
     .set('Content-Type', 'application/json');
+  return response;
+}
+
+async function getRunLog(runId: string) {
+  const response = await request(app)
+    .get(`/run-log?runId=${runId}`);
   return response;
 }
 
@@ -136,12 +142,16 @@ describe('Agent grabs Run', () => {
     )
     expect(responseToAppendLog1.status).toEqual(200);
     expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1);
+    const responseToGetRunLog1 = await getRunLog(run1.id)
+    expect(responseToGetRunLog1.text).toEqual(logstring1)
 
     const responseToAppendLog2 = await postToAppendLog(
       {agentId: agent._id, runId: run1._id, newLogContent: logstring2}
     )
     expect(responseToAppendLog2.status).toEqual(200);
     expect(readFileSync(run1.logPath,'utf-8')).toEqual(logstring1 + logstring2);
+    const responseToGetRunLog2 = await getRunLog(run1.id)
+    expect(responseToGetRunLog2.text).toEqual(logstring1 + logstring2)
 
     // again, let's send agent to the past 
     // to ensure changing status also updated lastActiveAt

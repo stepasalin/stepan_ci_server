@@ -9,6 +9,7 @@ import { FilterQuery, Schema } from 'mongoose';
 import touch from 'touch';
 import mkpath from 'mkpath';
 import fs from 'fs';
+import { readFile, fileExists } from '../../util/fsStuff'
 import { mustExist } from '../../util/assertions';
 
 
@@ -18,6 +19,18 @@ const getRuns = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ runs });
   } catch (error) {
     throw error;
+  }
+};
+
+const getLog = async (req: Request, res: Response): Promise<void> => {
+  const { runId } = req.query;
+  const logPath = `./runLogs/${runId}.log`
+  if(await fileExists(logPath)) {
+    const currentLog = await readFile(logPath);
+    res.set('Content-Type', 'text/plain').status(200).send(currentLog)
+  }
+  else {
+    res.status(404).send(`No log found for run ${runId}`)
   }
 };
 
@@ -197,4 +210,4 @@ const addRun = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getRuns, addRun, assignToAgent, findForAgent, appendLog, updateRunStatus, getRunCmd };
+export { getRuns, addRun, assignToAgent, findForAgent, appendLog, updateRunStatus, getRunCmd, getLog };
