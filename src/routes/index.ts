@@ -3,6 +3,7 @@ import { getTests, addTest } from '../controllers/auto_tests';
 import { getRuns, addRun, findForAgent, appendLog, updateRunStatus, getRunCmd, getLog } from '../controllers/runs';
 import { getAgents, addAgent, updateAgentStatus } from '../controllers/agents';
 import bodyParser from 'body-parser';
+import { addAgentGroup, getAgentGroups } from '../controllers/agent_groups';
 
 const jsonParser = bodyParser.json();
 
@@ -21,6 +22,8 @@ router.post('/append-log', jsonParser, appendLog);
 router.post('/upate-run-status', jsonParser, updateRunStatus);
 router.get('/run-command', jsonParser, getRunCmd);
 router.post('/update-agent-status', jsonParser, updateAgentStatus);
+router.get('./agent-groups', jsonParser, getAgentGroups)
+router.post('./add-agent-group',jsonParser, addAgentGroup)
 
 
 export default router;
