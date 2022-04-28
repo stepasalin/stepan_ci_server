@@ -2,8 +2,11 @@ import { app } from '../app';
 import db from '../database/connection';
 import { Agent } from '../models/agent';
 import { IAgent } from '../types/agent';
+import AgentGroup from '../models/agent_group';
+import { IAgentGroup } from '../types/agent_group';
 import request from 'supertest';
 import { millisecondsSince } from '../util/milliseconds_since'
+// import { Schema } from 'mongoose';
 
 async function postToAddAgent(agentParams: Record<string, unknown>) {
   const response = await request(app)
@@ -20,12 +23,21 @@ describe('Adding Agents', () => {
   const acceptableTimeInterval = 1000;
   let newAgent: IAgent | null;
   let agentAlreadyInDb: IAgent;
+  let agentGroupInDb: IAgentGroup;
+  let agentGroupNotInDb: IAgentGroup;
+  // let nonExistentId: Schema.Types.ObjectId;
 
   beforeAll(async () => {
     db.on('open', async () => {
       console.log('Database starts successfully');
     });
 
+    agentGroupInDb = new AgentGroup({name: 'some agent group'})
+    await agentGroupInDb.save()
+    agentGroupNotInDb = new AgentGroup({name: 'this one will be deleted'})
+    await agentGroupNotInDb.save()
+    // nonExistentId = agentGroupNotInDb._id
+    await agentGroupNotInDb.remove()
     agentAlreadyInDb = new Agent({name: agentAlreadyInDbName});
     await agentAlreadyInDb.save();
   });
@@ -37,7 +49,12 @@ describe('Adding Agents', () => {
 
   it('can register new agent', async () => {
     const agentCountBefore = await Agent.countDocuments();
-    const response = await postToAddAgent({name: agentCreatViaApiName})
+    const response = await postToAddAgent(
+      {
+        name: agentCreatViaApiName,
+        agentGroup: agentGroupInDb._id
+      }
+    )
 
     expect(response.status).toEqual(201);
     expect(response.body.message).toEqual('Agent added');
@@ -56,7 +73,12 @@ describe('Adding Agents', () => {
 
   it('cannot register another agent with the same name', async () =>{
     const agentCountBefore = await Agent.countDocuments();
-    const response = await postToAddAgent({name: agentAlreadyInDbName})
+    const response = await postToAddAgent(
+      {
+        name: agentCreatViaApiName,
+        agentGroup: agentGroupInDb._id
+      }
+    )
     const agentCountAfter = await Agent.countDocuments();
     expect(response.status).toEqual(422);
     expect(response.body.message).toEqual('Agent already registered')
