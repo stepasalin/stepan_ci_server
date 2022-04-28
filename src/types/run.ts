@@ -21,4 +21,6 @@ export interface IRun extends Document {
   availability: RunAvailability;
   test: IAutoTest;
   logPath: string;
+  takenAt: Date;
+  finishedAt: Date;
 }

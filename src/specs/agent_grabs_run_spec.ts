@@ -108,6 +108,44 @@ describe('Agent grabs Run', () => {
     return db.close();
   });
 
+  it ('can grab Run and update it as success', async () => {
+    await postToGetRun({agentId: agent._id})
+    expect(run1.takenAt).toEqual(undefined)
+    expect(run1.finishedAt).toEqual(undefined)
+    await postToUpdateRunStatus(
+      {agentId: agent._id, runId: run1._id, newExecutionStatus: 'inProgress'}
+    );
+    run1 = await refreshRun(run1);
+    expect(run1.finishedAt).toEqual(undefined)
+    expect(millisecondsSince(run1.takenAt)).toBeLessThan(acceptableTimeInterval);
+    const takenAt = run1.takenAt
+    await postToUpdateRunStatus(
+      {agentId: agent._id, runId: run1._id, newExecutionStatus: 'success'}
+    );
+    run1 = await refreshRun(run1);
+    expect(run1.takenAt).toEqual(takenAt)
+    expect(millisecondsSince(run1.finishedAt)).toBeLessThan(acceptableTimeInterval);
+  });
+
+  it ('can grab Run and update it as failure', async () => {
+    await postToGetRun({agentId: agent._id})
+    expect(run1.takenAt).toEqual(undefined)
+    expect(run1.finishedAt).toEqual(undefined)
+    await postToUpdateRunStatus(
+      {agentId: agent._id, runId: run1._id, newExecutionStatus: 'inProgress'}
+    );
+    run1 = await refreshRun(run1);
+    expect(run1.finishedAt).toEqual(undefined)
+    expect(millisecondsSince(run1.takenAt)).toBeLessThan(acceptableTimeInterval);
+    const takenAt = run1.takenAt
+    await postToUpdateRunStatus(
+      {agentId: agent._id, runId: run1._id, newExecutionStatus: 'fail'}
+    );
+    run1 = await refreshRun(run1);
+    expect(run1.takenAt).toEqual(takenAt)
+    expect(millisecondsSince(run1.finishedAt)).toBeLessThan(acceptableTimeInterval);
+  });
+
   it('can grab Run and append Log', async () => {
     expect(agent.status).toEqual('free');
     const responseToGetRun = await postToGetRun({agentId: agent._id})
