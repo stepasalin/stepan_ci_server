@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { IAgentGroup } from './agent_group';
 
 export enum AgentStatus {
   free = 'free',
@@ -9,4 +10,5 @@ export interface IAgent extends Document {
   name: string;
   status: AgentStatus;
   lastActiveAt: Date;
+  agentGroup: IAgentGroup;
 }
