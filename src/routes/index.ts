@@ -22,8 +22,8 @@ router.post('/append-log', jsonParser, appendLog);
 router.post('/upate-run-status', jsonParser, updateRunStatus);
 router.get('/run-command', jsonParser, getRunCmd);
 router.post('/update-agent-status', jsonParser, updateAgentStatus);
-router.get('./agent-groups', jsonParser, getAgentGroups)
-router.post('./add-agent-group',jsonParser, addAgentGroup)
+router.get('/agent-groups', jsonParser, getAgentGroups);
+router.post('/add-group',jsonParser, addAgentGroup);
 
 
 export default router;
