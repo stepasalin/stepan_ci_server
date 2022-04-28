@@ -25,7 +25,7 @@ const addAgentGroup = async (req: Request, res: Response): Promise<void> => {
 
       res
         .status(201)
-        .json({ message: 'Agent Group added', agent: newAgentGroup});
+        .json({ message: 'Agent Group added', agentGroup: newAgentGroup});
     } else {
       res.status(422).json({ message: 'Agent Group already registered' });
     }
