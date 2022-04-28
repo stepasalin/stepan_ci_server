@@ -7,6 +7,7 @@ import Run from '../models/run';
 import request from 'supertest';
 import { IRun } from '../types/run';
 import { mustExist} from '../util/assertions'
+import AgentGroup from '../models/agent_group';
 
 async function postToAddRun(runParams: Record<string, unknown>) {
   const response = await request(app)
@@ -20,15 +21,18 @@ describe('Adding Runs', () => {
   let nonExistentId: Schema.Types.ObjectId;
   let someTest: IAutoTest;
   let newRun :IRun | null;
+  const agentGroup = new AgentGroup({ name: 'something'});
 
   beforeAll(async () => {
     db.on('open', async () => {
       console.log('Database starts successfully');
     });
 
+    await agentGroup.save();
     const sharedTestParams = {
       description: 'Whatever',
       runCmd: 'ls -la',
+      agentGroup: agentGroup._id
     };
     const deletedTest: IAutoTest = new AutoTest({
       ...sharedTestParams,
