@@ -1,5 +1,6 @@
 import { Response, Request } from 'express';
 import {Agent} from '../../models/agent';
+import AgentGroup from '../../models/agent_group';
 import { IAgent } from '../../types/agent';
 
 type Action = () => Promise<void>;
@@ -21,13 +22,22 @@ const getAgents = async (req: Request, res: Response): Promise<void> => {
 
 const addAgent = async (req: Request, res: Response): Promise<void> => {
   try {
-    const body = req.body as Pick<IAgent, 'name' | 'status'>;
+    const body = req.body as Pick<IAgent, 'name' | 'status' | 'agentGroup'>;
+    
+    const agentGroupQuery = await AgentGroup.findById(body.agentGroup);
+    if (agentGroupQuery == null) {
+      res
+      .status(422)
+      .json( { message: `agent group ${body.agentGroup} not found`})
+      return(Promise.resolve());
+    }
 
-    const query = await Agent.findOne({ name: body.name });
-    if (query == null) {
+    const agentQuery = await Agent.findOne({ name: body.name });
+    if (agentQuery == null) {
       const agent: IAgent = new Agent({
         name: body.name,
         status: body.status,
+        agentGroup: body.agentGroup,
         lastActiveAt: Date.now(),
       });
 
