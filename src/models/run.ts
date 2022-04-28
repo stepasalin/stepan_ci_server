@@ -32,7 +32,17 @@ const runSchema: Schema = new Schema(
     logPath: {
       type: String,
       required: false
-    }
+    },
+
+    takenAt: {
+      type: Date,
+      required: false,
+    },
+
+    finishedAt: {
+      type: Date,
+      required: false,
+    },
   },
   { timestamps: true }
 );

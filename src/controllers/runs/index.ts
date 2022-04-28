@@ -177,7 +177,12 @@ const updateRunStatus = async (req: Request, res: Response): Promise<void> => {
         return;
       }
       run.executionStatus = newExecutionStatus;
-
+      if (newExecutionStatus == 'inProgress') {
+        run.takenAt = new Date();
+      }
+      if (['success', 'fail', 'ciError'].indexOf(newExecutionStatus) > -1) {
+        run.finishedAt = new Date();
+      }
       await run.save();
       res.status(200).json({});
       return;
