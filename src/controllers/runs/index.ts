@@ -53,7 +53,12 @@ const findForAgent = async(req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const runQueryResult = await Run.findOne({availability: 'available', executionStatus: 'pending'}  as FilterQuery<Schema>)
+  const runQueryResult = await Run.findOne(
+    {
+    availability: 'available',
+    executionStatus: 'pending',
+    agentGroup: agent.agentGroup
+    }  as FilterQuery<Schema>)
 
   performViaAgent(
     agent,
