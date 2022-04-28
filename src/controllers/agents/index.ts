@@ -23,7 +23,7 @@ const getAgents = async (req: Request, res: Response): Promise<void> => {
 const addAgent = async (req: Request, res: Response): Promise<void> => {
   try {
     const body = req.body as Pick<IAgent, 'name' | 'status' | 'agentGroup'>;
-    
+
     const agentGroupQuery = await AgentGroup.findById(body.agentGroup);
     if (agentGroupQuery == null) {
       res
