@@ -53,25 +53,30 @@ const findForAgent = async(req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  const runQueryResult = await Run.findOne(
-    {
-    availability: 'available',
-    executionStatus: 'pending',
-    agentGroup: agent.agentGroup
-    }  as FilterQuery<Schema>)
-
   performViaAgent(
     agent,
     async () => {
+      const availableAutoTests = await AutoTest.find(
+        { agentGroup: agent.agentGroup }  as FilterQuery<Schema>
+      )
+      
+      const runQueryResult = await Run.findOne(
+        {
+          availability: 'available',
+          executionStatus: 'pending',
+          test: { $in: availableAutoTests }
+        }  as FilterQuery<Schema>
+      )
+
       if (runQueryResult == null) {
         res.status(200).json({});
         return;
       }
       
       await assignAgent(runQueryResult, agent);
-      res.status(200).json({runId: runQueryResult.id})
+      res.status(200).json( {runId: runQueryResult.id} )
     }
-  );
+  )
 }
 
 const assignToAgent = async(req: Request, res: Response): Promise<void> => {
