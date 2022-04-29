@@ -1,6 +1,8 @@
 import { app } from '../app';
 import db from '../database/connection';
 import { Agent } from '../models/agent';
+import AgentGroup from '../models/agent_group'
+import { IAgentGroup } from '../types/agent_group'
 import { IAgent } from '../types/agent';
 import request from 'supertest';
 import { millisecondsSince } from '../util/milliseconds_since'
@@ -68,6 +70,7 @@ async function setAgentLastActive(agent: IAgent, dateString: string) {
 
 describe('Agent grabs Run', () => {
   const acceptableTimeInterval = 1000;
+  let agentGroup: IAgentGroup;
   let agent: IAgent;
   let autoTest: IAutoTest;
   let run1: IRun;
@@ -80,7 +83,10 @@ describe('Agent grabs Run', () => {
       console.log('Database starts successfully');
     });
 
-    agent = new Agent({name: 'AGENT_100500'});
+    agentGroup = new AgentGroup({name: 'something'})
+    await agentGroup.save()
+    agent = new Agent({name: 'AGENT_100500', agentGroup: agentGroup._id});
+    await agent.save();
     // I want to emulate a situation where Agent was active a long time ago
     // --------------------------------------------------   in a galaxy far far away
     await setAgentLastActive(agent, '2001-01-01');
@@ -88,7 +94,8 @@ describe('Agent grabs Run', () => {
     autoTest = new AutoTest({
       name: 'blah blah whatevs',
       description: 'for auto test, normally you should not see this id DB',
-      runCmd: 'rspec run_the_goddamn_spec.rb'
+      runCmd: 'rspec run_the_goddamn_spec.rb',
+      agentGroup: agentGroup._id
     });
     await autoTest.save();
 
