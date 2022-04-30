@@ -71,10 +71,14 @@ async function setAgentLastActive(agent: IAgent, dateString: string) {
 describe('Agent grabs Run', () => {
   const acceptableTimeInterval = 1000;
   let agentGroup: IAgentGroup;
+  let agentGroup2: IAgentGroup;
   let agent: IAgent;
+  let agent2: IAgent;
   let autoTest: IAutoTest;
+  let autoTest2: IAutoTest;
   let run1: IRun;
   let run2: IRun;
+  let autoTest2Run: IRun;
   const logstring1 = "logString1 yatta-yarra \n";
   const logstring2 = "logString2 whatever \n";
 
@@ -83,13 +87,17 @@ describe('Agent grabs Run', () => {
       console.log('Database starts successfully');
     });
 
-    agentGroup = new AgentGroup({name: 'something'})
+    agentGroup = new AgentGroup({name: 'agent group 1'})
     await agentGroup.save()
+    agentGroup2 = new AgentGroup({name: 'agent group 2'})
+    await agentGroup2.save()
     agent = new Agent({name: 'AGENT_100500', agentGroup: agentGroup._id});
     await agent.save();
     // I want to emulate a situation where Agent was active a long time ago
     // --------------------------------------------------   in a galaxy far far away
     await setAgentLastActive(agent, '2001-01-01');
+    agent2 = new Agent({name: 'AGENT_OF_ANOTHER_GROUP', agentGroup: agentGroup2._id});
+    await agent2.save();
 
     autoTest = new AutoTest({
       name: 'blah blah whatevs',
@@ -98,12 +106,21 @@ describe('Agent grabs Run', () => {
       agentGroup: agentGroup._id
     });
     await autoTest.save();
+    autoTest2 = new AutoTest({
+      name: 'blah blah whatevs',
+      description: 'for auto test, normally you should not see this id DB',
+      runCmd: 'rspec run_the_goddamn_spec.rb',
+      agentGroup: agentGroup2._id
+    });
+    await autoTest2.save();
 
     run1 = new Run({test: autoTest._id});
     await run1.save();
     run2 = new Run({test: autoTest._id});
     // run2 should not be saved just yet, we want to emulate the situation
     // where run2 was created some time after run1 started
+    autoTest2Run = new Run({test: autoTest2._id})
+    await autoTest2Run.save()
   });
 
   afterEach(async () => {
@@ -114,6 +131,13 @@ describe('Agent grabs Run', () => {
     run2;
     return db.close();
   });
+
+  it ('does NOT show Runs from another agent group', async () => {
+    // When agent from a certain agentGroup asks for a Run, it should 
+    // only receive runs from its own group
+    const responseToGetRun = await postToGetRun({agentId: agent2._id});
+    expect(responseToGetRun.body).toEqual({ runId: `${autoTest2Run._id}`})
+  })
 
   it ('can grab Run and update it as success', async () => {
     await postToGetRun({agentId: agent._id})
