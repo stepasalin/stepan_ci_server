@@ -20,6 +20,12 @@ export const Agent =  model<IAgent>('Agent', new Schema(
       type: Date,
       required: false,
     },
+
+    agentGroup: {
+      type: Schema.Types.ObjectId,
+      ref: 'agentGroup',
+      required: true,
+    }
   },
   { timestamps: true }
 ));

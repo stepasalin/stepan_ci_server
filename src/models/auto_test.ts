@@ -17,6 +17,12 @@ const autoTestSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+
+    agentGroup: {
+      type: Schema.Types.ObjectId,
+      ref: 'agentGroup',
+      required: true,
+    }
   },
   { timestamps: true }
 );
