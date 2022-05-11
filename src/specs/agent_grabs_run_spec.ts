@@ -135,8 +135,19 @@ describe('Agent grabs Run', () => {
   it ('does NOT show Runs from another agent group', async () => {
     // When agent from a certain agentGroup asks for a Run, it should 
     // only receive runs from its own group
-    const responseToGetRun = await postToGetRun({agentId: agent2._id});
+    let responseToGetRun = await postToGetRun({agentId: agent2._id});
     expect(responseToGetRun.body).toEqual({ runId: `${autoTest2Run._id}`})
+    await postToUpdateRunStatus(
+      {agentId: agent2._id, runId: autoTest2Run._id, newExecutionStatus: 'success'}
+    );
+    // And after this run is finished this agent should not receive any more runs
+    // even though there are runs in the database. This agent just isn't supposed to
+    // receive those
+    responseToGetRun = await postToGetRun({agentId: agent2._id});
+    expect(responseToGetRun.body).toEqual({})
+    // this just shows that there is another available run, 
+    // but if you take a look at it, it is set up for another agent group
+    expect(await Run.countDocuments({availability: RunAvailability.available})).toBeGreaterThan(0)
   })
 
   it ('can grab Run and update it as success', async () => {
