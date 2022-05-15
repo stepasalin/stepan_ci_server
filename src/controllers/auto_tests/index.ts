@@ -1,7 +1,9 @@
 import { Response, Request } from 'express';
 import { IAutoTest } from '../../types/auto_test';
+import { ITableauItem, ITableau  } from '../../types/tableau'
 import AgentGroup from '../../models/agent_group';
 import AutoTest from '../../models/auto_test';
+import Run from '../../models/run'
 
 const getTests = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -11,6 +13,32 @@ const getTests = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
+
+const getTableau = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const tests: IAutoTest[] = await AutoTest.find();
+    const tableauItemsPromises: Promise<ITableauItem>[] = tests.map(
+      async(t) => { return(await tableauItem(t))}
+    )
+    const tableauItems: ITableauItem[] = await Promise.all(tableauItemsPromises)
+    const tableau: ITableau = {tableauItems: tableauItems}
+    res.status(200).json(tableau)
+  } catch (error) {
+    throw error;
+  }
+};
+
+const tableauItem = async (autoTest: IAutoTest): Promise<ITableauItem> => {
+  const runs = await Run.find(
+    { test: autoTest}
+    ).sort({ createdAt: -1 }).limit(10)
+  return(
+    {
+      autoTestId: autoTest._id,
+      runs: runs
+    }
+  )
+}
 
 const addTest = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -44,4 +72,4 @@ const addTest = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getTests, addTest };
+export { getTests, addTest, getTableau };
