@@ -14,7 +14,7 @@ const getTests = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const getTableau = async (req: Request, res: Response): Promise<void> => {
+const tableau = async (req: Request, res: Response): Promise<void> => {
   try {
     const tests: IAutoTest[] = await AutoTest.find();
     const tableauItemsPromises: Promise<ITableauItem>[] = tests.map(
@@ -72,4 +72,4 @@ const addTest = async (req: Request, res: Response): Promise<void> => {
     throw error;
   }
 };
-export { getTests, addTest, getTableau };
+export { getTests, addTest, tableau };
