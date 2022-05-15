@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getTests, addTest } from '../controllers/auto_tests';
+import { getTests, addTest, tableau } from '../controllers/auto_tests';
 import { getRuns, addRun, findForAgent, appendLog, updateRunStatus, getRunCmd, getLog } from '../controllers/runs';
 import { getAgents, addAgent, updateAgentStatus } from '../controllers/agents';
 import bodyParser from 'body-parser';
@@ -10,6 +10,7 @@ const jsonParser = bodyParser.json();
 // eslint-disable-next-line new-cap
 const router = Router();
 
+router.get('/tableau', tableau);
 router.get('/all-auto-tests', getTests);
 router.get('/run-log', getLog)
 router.post('/add-auto-test', jsonParser, addTest);
